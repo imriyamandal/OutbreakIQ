@@ -2,17 +2,18 @@ from fastapi import FastAPI
 
 from app.routers.prediction import router
 
-app=FastAPI(
+app = FastAPI(
     title="OutbreakIQ API",
-    version="1.0"
+    version="1.0.0"
 )
 
 app.include_router(router)
+
 
 @app.get("/")
 def root():
 
     return {
-        "project":"OutbreakIQ",
-        "status":"running"
+        "message":
+        "OutbreakIQ API Running"
     }

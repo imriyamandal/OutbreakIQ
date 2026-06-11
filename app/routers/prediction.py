@@ -49,12 +49,10 @@ def alert(payload: PredictionRequest):
         payload.model_dump()
     )
 
-    alert_info = generate_alert(
+    return generate_alert(
         probability=result["outbreak_probability"],
         predicted_cases=result["predicted_cases"]
     )
-
-    return alert_info
 
 
 @router.get("/health")
@@ -69,6 +67,9 @@ def health():
 def feature_importance():
 
     return {
-        "image":
-        "ml/reports/shap_summary.png"
+        "summary_plot":
+        "ml/reports/shap_summary.png",
+
+        "dependence_plot":
+        "ml/reports/shap_dependence.png"
     }

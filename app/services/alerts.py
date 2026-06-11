@@ -1,6 +1,11 @@
 from datetime import datetime
 
-def generate_alert(probability: float, predicted_cases: int):
+
+def generate_alert(
+    probability: float,
+    predicted_cases: int
+):
+
     if probability >= 0.80:
         level = "CRITICAL"
         message = "Immediate outbreak intervention required"
@@ -21,5 +26,7 @@ def generate_alert(probability: float, predicted_cases: int):
         "alert_level": level,
         "message": message,
         "predicted_cases": predicted_cases,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "generated_at": datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
     }

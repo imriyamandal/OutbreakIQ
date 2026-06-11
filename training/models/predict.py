@@ -84,7 +84,12 @@ class DiseasePredictor:
 
         reg_path = MODELS_DIR / "regressor.pkl"
         cls_path = MODELS_DIR / "classifier.pkl"
-
+        for path in [reg_path, cls_path]:
+            if not path.exists():
+                raise FileNotFoundError(
+                    f"Model file not found: {path}"
+                )
+            
         if not reg_path.exists():
             raise FileNotFoundError(
                 f"Regressor not found at {reg_path}. "
@@ -146,10 +151,6 @@ class DiseasePredictor:
             else:
                 row[enc_key] = 0
 
-        print("\nFEATURE ORDER")
-        for i,feat in enumerate(ALL_FEATURES):
-            print(i,feat)
-
         feature_vector = np.array(
             [row[feat] for feat in ALL_FEATURES],
             dtype=np.float64,
@@ -160,10 +161,6 @@ class DiseasePredictor:
     def predict(self, data: Dict[str, Any]) -> Dict[str, Any]:
 
         X = self._prepare_input(data)
-
-        print("\n")
-        print("PREDICTOR FEATURE COUNT")
-        print(X.shape)
 
         log_cases = float(self.regressor.predict(X)[0])
         log_cases = max(log_cases, 0.0)               
@@ -243,7 +240,6 @@ if __name__ == "__main__":
         "roll_6_std"       : 9.2,
         "growth_rate"      : 0.18,
         "spike_ratio"      : 1.5,
-        "outbreak_flag"    : 1,
         "outbreak_frequency_12m": 3.0,
     }
 

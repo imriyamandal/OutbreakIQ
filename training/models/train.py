@@ -1,4 +1,5 @@
 import logging
+import subprocess
 import warnings
 import joblib
 import pandas as pd
@@ -182,6 +183,18 @@ def main():
     evaluate_regressor(reg_model, X_test, y_reg_test, split="test")
     evaluate_classifier(cls_model, X_test, y_cls_test, split="test")
 
+    import subprocess
+
+    logger.info("Generating SHAP explainability...")
+
+    subprocess.run(
+    [
+        "python",
+        "-m",
+        "ml.explainability.shap_analysis"
+    ],
+    check=False
+    )
     logger.info("TRAINING PIPELINE COMPLETED SUCCESSFULLY")
     logger.info(f"Models saved to : {MODELS_DIR}")
     logger.info(f"Reports saved to: {REPORTS_DIR}")
