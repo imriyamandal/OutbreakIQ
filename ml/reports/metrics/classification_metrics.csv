@@ -1,0 +1,4 @@
+model,split,Accuracy,Precision,Recall,F1,ROC_AUC,Avg_Precision
+XGBoost,validation,0.992,0.9918,0.9759,0.9838,0.9997,
+RandomForest,validation,0.9639,0.9706,0.8824,0.9244,0.9936,
+XGBClassifier,test,0.9947,0.9829,0.9897,0.9863,0.9994,0.9984
