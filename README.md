@@ -262,8 +262,5 @@ streamlit run dashboard/app.py
 
 ---
 
-## Authors
-
-B.Tech Final Year Project
 
 OutbreakIQ – Disease Outbreak Forecasting and Early Warning System
