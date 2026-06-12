@@ -1,19 +1,18 @@
 from pydantic import BaseModel
-
-
+from typing import Optional
 class PredictionRequest(BaseModel):
 
     state_ut: str
     district: str
     disease: str
-    disease_category: str
+    disease_category: Optional[str] = None
 
     day: int
     month: int
     year: int
 
-    latitude: float
-    longitude: float
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     precipitation: float
     lai: float
