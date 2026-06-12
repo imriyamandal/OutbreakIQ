@@ -28,7 +28,6 @@ def render_heatmap(df):
         )
         return
 
-    # Determine map center
     center_lat = df["latitude"].mean()
     center_lon = df["longitude"].mean()
     states_count = len(df["state_ut"].unique())
@@ -40,14 +39,12 @@ def render_heatmap(df):
         tiles="CartoDB positron"
     )
 
-    # Initialize MarkerCluster plugin
     marker_cluster = MarkerCluster().add_to(india_map)
 
     for _, row in df.iterrows():
         lat = float(row["latitude"])
         lon = float(row["longitude"])
-        
-        # Extracted variables for popup
+
         state = row.get("state_ut", "Unknown")
         district = row.get("district", "Unknown")
         disease = row.get("disease", "Unknown")

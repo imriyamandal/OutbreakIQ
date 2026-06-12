@@ -55,8 +55,8 @@ section[data-testid="stSidebar"] * {
 }
 
 .sidebar-logo img {
-    width: 10px;
-    height: 5px;
+    width: 70px;
+    height: auto;
 }
 
 .sidebar-title {
@@ -73,7 +73,12 @@ section[data-testid="stSidebar"] * {
     font-size: 38px;
     font-weight: 800;
     color: #0f172a;
+
+    margin-top: 0px;
     margin-bottom: 5px;
+
+    display: flex;
+    align-items: center;
 }
 
 .page-subtitle {
@@ -129,8 +134,6 @@ section[data-testid="stSidebar"] * {
 .metric-orange {
     border-top: 5px solid #f59e0b;
 }
-
-
 
 .section-title {
     font-size: 20px;

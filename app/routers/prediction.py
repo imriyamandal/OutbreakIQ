@@ -14,10 +14,8 @@ from app.utils.history_db import save_prediction, get_history, init_db
 router = APIRouter()
 predictor_service = Predictor()
 
-# Initialize DB on import
 init_db()
 
-# Load historical dataset
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_PATH = BASE_DIR / "ml" / "data" / "final" / "ml_data.csv"
 
@@ -48,10 +46,7 @@ def health():
         "records_count": len(df_global) if not df_global.empty else 0
     }
 
-
-# Cache for generated alerts to avoid re-running predictions on every request
 _cached_alerts = None
-
 
 @router.post("/predict")
 def predict(payload: PredictionRequest):
@@ -59,17 +54,13 @@ def predict(payload: PredictionRequest):
     if df_global.empty:
         raise HTTPException(status_code=500, detail="Historical dataset not loaded on backend.")
     
-    # Run the machine learning pipeline
     input_dict = payload.model_dump()
     result = predictor_service.predict(input_dict)
-    
-    # Save to history database
+
     save_prediction(result["enriched_input"], result)
     
-    # Reset alerts cache on new prediction
     _cached_alerts = None
-    
-    # Generate alert
+
     alert_info = generate_alert(
         probability=result["outbreak_probability"],
         predicted_cases=result["predicted_cases"]
@@ -172,7 +163,6 @@ def forecast(payload: ForecastRequest):
     disease = payload.disease
     steps = payload.steps
     
-    # Filter historic series
     filtered = df_global[
         (df_global["state_ut"].str.lower() == state.lower()) &
         (df_global["district"].str.lower() == district.lower()) &
@@ -182,16 +172,12 @@ def forecast(payload: ForecastRequest):
     forecast_results = []
     
     if len(filtered) >= 3:
-        # We have historical data, project based on monthly averages & trend
-        # Let's extract the last month in history
         last_row = filtered.iloc[-1]
         last_year = int(last_row.get("year", 2024))
         last_month = int(last_row.get("month", 6))
-        
-        # Compute historical monthly averages to capture seasonality
+
         monthly_avg = filtered.groupby("month")["cases"].mean().to_dict()
         
-        # Compute a simple trend multiplier from recent 6 months
         recent_cases = filtered.tail(6)["cases"].mean()
         overall_cases = filtered["cases"].mean()
         trend_factor = (recent_cases / overall_cases) if overall_cases > 0 else 1.0
@@ -206,19 +192,16 @@ def forecast(payload: ForecastRequest):
                 curr_month = 1
                 curr_year += 1
                 
-            # Baseline seasonal cases
             base_cases = monthly_avg.get(curr_month, overall_cases)
             predicted = int(round(base_cases * trend_factor))
             predicted = max(predicted, 0)
             
-            # Simple probability of outbreak
             prob = 0.1
             if predicted > overall_cases * 1.5:
                 prob = 0.75
             elif predicted > overall_cases:
                 prob = 0.45
             
-            # Let's map risk
             if prob >= 0.8:
                 risk = "Critical"
             elif prob >= 0.6:
@@ -238,7 +221,6 @@ def forecast(payload: ForecastRequest):
                 "risk_level": risk
             })
     else:
-        # Fallback if no history exists
         curr_month = 6
         curr_year = 2024
         for i in range(1, steps + 1):
@@ -267,14 +249,11 @@ def dashboard_stats():
     total_cases = int(df_global["cases"].sum())
     total_outbreaks = int(df_global["outbreak"].sum())
     
-    # High risk states (states with average outbreak count > 10)
     state_outbreaks = df_global.groupby("state_ut")["outbreak"].sum()
     high_risk_states = int((state_outbreaks > 10).sum())
     
-    # Most affected disease
     most_affected = str(df_global.groupby("disease")["cases"].sum().idxmax())
     
-    # Monthly Trends (last 12 months in the dataset)
     trends = df_global.groupby(["year", "month"])["cases"].sum().reset_index()
     trends = trends.sort_values(["year", "month"]).tail(12)
     monthly_trends = [
@@ -285,7 +264,6 @@ def dashboard_stats():
         for _, row in trends.iterrows()
     ]
     
-    # Risk Distribution (count of records by case levels)
     low_cnt = int((df_global["cases"] <= 10).sum())
     med_cnt = int(((df_global["cases"] > 10) & (df_global["cases"] <= 50)).sum())
     high_cnt = int(((df_global["cases"] > 50) & (df_global["cases"] <= 100)).sum())
@@ -311,14 +289,12 @@ def analytics_data():
     if df_global.empty:
         raise HTTPException(status_code=500, detail="Historical dataset not loaded.")
         
-    # 1. Disease trends
     disease_cases = df_global.groupby("disease")["cases"].sum().reset_index()
     disease_trends = [
         {"disease": str(row["disease"]), "cases": int(row["cases"])}
         for _, row in disease_cases.iterrows()
     ]
     
-    # 2. State comparison (Top 10 states)
     state_comparison = df_global.groupby("state_ut")["cases"].sum().reset_index()
     state_comparison = state_comparison.sort_values("cases", ascending=False).head(10)
     state_trends = [
@@ -326,7 +302,6 @@ def analytics_data():
         for _, row in state_comparison.iterrows()
     ]
     
-    # 3. Seasonal analysis (cases by month)
     seasonal = df_global.groupby("month")["cases"].mean().reset_index()
     seasonal_analysis = [
         {
@@ -336,19 +311,15 @@ def analytics_data():
         for _, row in seasonal.iterrows()
     ]
     
-    # 4. Correlation analysis
-    # Select key numerical columns
     cols = ["temp", "precipitation", "lai", "cases", "outbreak"]
     corr_matrix = df_global[cols].corr().fillna(0).to_dict()
     
-    # Convert correlation matrix to lists for heatmap rendering
     corr_data = {
         "x": cols,
         "y": cols,
         "z": [[round(corr_matrix[col1][col2], 3) for col2 in cols] for col1 in cols]
     }
     
-    # 5. Outbreak frequency by disease
     freq = df_global.groupby("disease")["outbreak"].sum().reset_index()
     outbreak_frequency = [
         {"disease": str(row["disease"]), "outbreaks": int(row["outbreak"])}
@@ -382,13 +353,11 @@ def heatmap_data(
     if df_filtered.empty:
         return {"points": []}
         
-    # Group by state, district, disease, lat, lon and get the latest record
     idx_latest = df_filtered.groupby(["state_ut", "district", "disease"])["date"].idxmax()
     df_latest = df_filtered.loc[idx_latest]
     
     points = []
     for _, row in df_latest.iterrows():
-        # Map risk dynamically from historical cases and outbreak flag (avoids running ML prediction 1820 times in a loop)
         prob = 0.85 if row["outbreak"] == 1 else (0.50 if row["cases"] > 50 else 0.15)
         risk = "Critical" if prob >= 0.8 else ("High" if prob >= 0.6 else ("Medium" if prob >= 0.3 else "Low"))
         

@@ -33,22 +33,16 @@ def generate_alert(
 
 
 def scan_and_generate_alerts(df_global, predictor_service):
-    """
-    Scans the latest record for each state-district-disease combination (recent records from 2021/2022)
-    and generates dynamic, prediction-driven warnings.
-    """
+
     if df_global.empty:
         return []
         
-    # Drop rows with NaN lat/lon
     df_clean = df_global.dropna(subset=["latitude", "longitude", "cases"])
     
-    # Filter for combinations with records in 2021 or 2022
     df_recent = df_clean[df_clean["year"] >= 2021]
     if df_recent.empty:
-        df_recent = df_clean  # Fallback if no recent data exists
+        df_recent = df_clean  
         
-    # Get index of the latest record for each combination
     idx_latest = df_recent.groupby(["state_ut", "district", "disease"])["date"].idxmax()
     df_latest = df_recent.loc[idx_latest]
     
@@ -56,7 +50,6 @@ def scan_and_generate_alerts(df_global, predictor_service):
     for _, row in df_latest.iterrows():
         input_dict = row.to_dict()
         try:
-            # We predict without SHAP for speed
             pred = predictor_service.predict(input_dict, calculate_shap=False)
             prob = pred["outbreak_probability"]
             predicted = pred["predicted_cases"]
@@ -65,7 +58,6 @@ def scan_and_generate_alerts(df_global, predictor_service):
             prob = 0.85 if row["outbreak"] == 1 else 0.15
             predicted = int(row["cases"])
             
-        # Determine warning severity and message
         if prob >= 0.85:
             level = "CRITICAL"
             msg = f"Critical Outbreak: Immediate intervention required. {predicted} predicted cases."
@@ -79,7 +71,7 @@ def scan_and_generate_alerts(df_global, predictor_service):
             level = "MODERATE"
             msg = f"Moderate Risk: Stable but elevated activity."
         else:
-            continue  # Low risk locations are omitted from active alerts to reduce clutter
+            continue  
             
         alerts.append({
             "state_ut": str(row["state_ut"]),
@@ -92,7 +84,6 @@ def scan_and_generate_alerts(df_global, predictor_service):
             "month": int(row["month"])
         })
         
-    # Sort alerts so critical/high are at the top
     severity_order = {"CRITICAL": 0, "HIGH": 1, "MODERATE": 2}
     alerts = sorted(alerts, key=lambda x: severity_order.get(x["risk_level"], 3))
     

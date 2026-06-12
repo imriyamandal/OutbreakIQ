@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 
-# Add project root to sys.path to allow absolute imports of the app package
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -25,7 +24,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Inject custom CSS stylesheet
 try:
     with open("app/assets/style.css") as f:
         st.markdown(
