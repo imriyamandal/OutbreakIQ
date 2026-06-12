@@ -18,7 +18,7 @@ def render_sidebar():
     )
 
     page = st.sidebar.radio(
-        "",
+        "Navigation",
         [
             "Overview",
             "Prediction",
@@ -27,7 +27,7 @@ def render_sidebar():
             "History",
             "Heatmap",
             "Alerts"
-        ]
+        ]label_visibility="collapsed"
     )
 
     st.sidebar.divider()
