@@ -27,7 +27,8 @@ def render_sidebar():
             "History",
             "Heatmap",
             "Alerts"
-        ], label_visibility="collapsed"
+        ], 
+        label_visibility="collapsed"
     )
 
     st.sidebar.divider()
