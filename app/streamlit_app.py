@@ -1,7 +1,8 @@
 import sys
 from pathlib import Path
 import streamlit as st
-API_URL = st.secrets.get("API_URL", "http://localhost:8000")
+
+API_URL = st.secrets.get("API_URL")
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
