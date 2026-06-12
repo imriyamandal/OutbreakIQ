@@ -35,12 +35,6 @@ env/
 .DS_Store
 Thumbs.db
 
-# Model Files
-
-ml/models/*.pkl
-ml/models/*.joblib
-ml/models/*.h5
-
 # Generated Reports
 
 ml/reports/*.png
