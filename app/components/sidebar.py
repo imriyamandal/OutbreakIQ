@@ -16,7 +16,7 @@ def render_sidebar():
         Public Health Intelligence
         """
     )
-
+    st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Navigation",
         [

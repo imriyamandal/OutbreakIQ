@@ -80,3 +80,4 @@ checkpoint
 # FastAPI Cache
 
 *.sqlite3
+.streamlit/secrets.toml

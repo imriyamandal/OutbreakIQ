@@ -26,11 +26,14 @@ st.set_page_config(
 )
 
 try:
-    with open("app/assets/style.css") as f:
-        st.markdown(
-            f"<style>{f.read()}</style>",
-            unsafe_allow_html=True
-        )
+    CSS_PATH = PROJECT_ROOT / "app" / "assets" / "style.css"
+
+    if CSS_PATH.exists():
+        with open(CSS_PATH) as f:
+            st.markdown(
+                f"<style>{f.read()}</style>",
+                unsafe_allow_html=True
+            )
 except FileNotFoundError:
     pass
 
