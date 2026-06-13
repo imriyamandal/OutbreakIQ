@@ -8,7 +8,7 @@ def get_metadata():
     return APIClient.get("/metadata")
 
 def show_heatmap():
-    st.markdown('<div class="page-title">Disease Hotspot Heatmap</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-title">Disease Hotspot Heatmap (latest data - 2022)</div>', unsafe_allow_html=True)
     st.markdown('<div class="page-subtitle">Geospatial visualization of outbreak intensity and regional risk levels</div>', unsafe_allow_html=True)
 
     metadata = get_metadata()
@@ -19,7 +19,6 @@ def show_heatmap():
     diseases = ["All"] + metadata.get("diseases", [])
     states = ["All"] + metadata.get("states", [])
 
-    # Filter section
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">Geospatial Filters</div>', unsafe_allow_html=True)
 

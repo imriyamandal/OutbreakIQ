@@ -3,7 +3,7 @@ import pandas as pd
 from app.utils.api_client import APIClient
 
 def show_alerts():
-    st.markdown('<div class="page-title">Epidemiological Alerts</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-title">Epidemiological Alerts (from year 2021 onwards)</div>', unsafe_allow_html=True)
     st.markdown('<div class="page-subtitle">Real-time alerts of emerging hotspots and regional outbreak threats</div>', unsafe_allow_html=True)
 
     with st.spinner("Fetching active alerts..."):
