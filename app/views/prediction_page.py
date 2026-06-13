@@ -21,7 +21,6 @@ def show_prediction():
     diseases = metadata.get("diseases", [])
     state_districts = metadata.get("state_districts", {})
 
-    # Sidebar parameters or two-column form
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">Prediction Parameters</div>', unsafe_allow_html=True)
 
@@ -131,7 +130,7 @@ def show_prediction():
             st.markdown('<div class="forecast-result">', unsafe_allow_html=True)
             st.markdown('<div class="forecast-title">🔮 MODEL PREDICTION COMPLETED</div>', unsafe_allow_html=True)
             
-            c_res1, c_res2, c_res3, c_res4 = st.columns(4)
+            c_res1, c_res2, c_res3= st.columns(3)
             
             with c_res1:
                 st.metric("Predicted Cases", f"{result['predicted_cases']}")
@@ -144,8 +143,6 @@ def show_prediction():
                 risk_style = "high-risk" if risk in ["High", "Critical"] else ("medium-risk" if risk == "Medium" else "low-risk")
                 st.markdown(f"**Risk Level** <br> <span class='{risk_style}'>{risk}</span>", unsafe_allow_html=True)
                 
-            with c_res4:
-                st.metric("Confidence Score", f"{result['confidence_score'] * 100:.2f}%")
 
             st.markdown('</div>', unsafe_allow_html=True)
 
